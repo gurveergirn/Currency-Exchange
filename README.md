@@ -1,4 +1,5 @@
-The Currency Exchange System is a web application built using Node.js, Express, SQLite, and Tailwind CSS to provide users with an easy-to-use platform for currency conversions. The system dynamically fetches live exchange rates from an external API and allows users to convert between multiple global currencies. It also keeps a record of recent transactions for reference.
+The Currency Exchange App is a web application built using Node.js, Express, SQLite, and Tailwind CSS to provide users with an easy-to-use platform for currency conversions. The system dynamically fetches live exchange rates from an external API and allows users to convert between multiple global currencies. It also keeps a record of recent Conversions for reference.
+
 Key Features:
 Dynamic Currency Conversion:
 Supports multiple currencies, including USD, CAD, EUR, GBP, INR, JPY, and more.
