@@ -12,9 +12,9 @@ Utilizes SQLite for storing and querying exchange rates and transaction records.
 API Integration:
 Fetches real-time exchange rates for accurate and up-to-date conversions.
 
-Frontend: HTML, CSS, Tailwind CSS
-Backend: Node.js, Express.js
-Database: SQLite
+Frontend: HTML, CSS, Tailwind CSS.
+Backend: Node.js, Express.js.
+Database: SQLite.
 API: https://www.exchangerate-api.com/
 
 How It Works:
