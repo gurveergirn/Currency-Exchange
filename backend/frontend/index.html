@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Currency Converter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100 text-gray-800">
+    <div class="container mx-auto p-4">
+      <!-- Header -->
+      <header class="text-center my-6">
+        <h1 class="text-4xl font-bold text-blue-600">Currency Converter</h1>
+        <p class="text-gray-600 mt-2">Convert currencies easily and quickly</p>
+      </header>
+
+      <!-- Conversion Form -->
+      <section class="bg-white shadow-lg rounded-lg p-6 max-w-3xl mx-auto">
+        <form id="convertForm" class="space-y-4">
+          <!-- From Currency -->
+          <div>
+            <label
+              for="currencyFrom"
+              class="block text-sm font-medium text-gray-700"
+              >From:</label
+            >
+            <select
+              id="currencyFrom"
+              class="w-full border border-gray-300 rounded-lg p-2"
+            >
+              <option value="USD">USD - United States Dollar</option>
+              <option value="EUR">EUR - Euro</option>
+              <option value="GBP">GBP - British Pound</option>
+              <option value="CAD">CAD - Canadian Dollar</option>
+              <option value="INR">INR - Indian Rupee</option>
+              <option value="JPY">JPY - Japanese Yen</option>
+              <option value="MXN">MXN - Mexican Peso</option>
+              <option value="KES">KES - Kenyan Shilling</option>
+              <option value="PKR">PKR - Pakistani Rupee</option>
+              <option value="CNY">CNY - Chinese Yuan</option>
+              <option value="SGD">SGD - Singapore Dollar</option>
+              <option value="RUB">RUB - Russian Ruble</option>
+            </select>
+          </div>
+
+          <!-- To Currency -->
+          <div>
+            <label
+              for="currencyTo"
+              class="block text-sm font-medium text-gray-700"
+              >To:</label
+            >
+            <select
+              id="currencyTo"
+              class="w-full border border-gray-300 rounded-lg p-2"
+            >
+              <option value="EUR">EUR - Euro</option>
+              <option value="USD">USD - United States Dollar</option>
+              <option value="GBP">GBP - British Pound</option>
+              <option value="CAD">CAD - Canadian Dollar</option>
+              <option value="INR">INR - Indian Rupee</option>
+              <option value="JPY">JPY - Japanese Yen</option>
+              <option value="MXN">MXN - Mexican Peso</option>
+              <option value="KES">KES - Kenyan Shilling</option>
+              <option value="PKR">PKR - Pakistani Rupee</option>
+              <option value="CNY">CNY - Chinese Yuan</option>
+              <option value="SGD">SGD - Singapore Dollar</option>
+              <option value="RUB">RUB - Russian Ruble</option>
+            </select>
+          </div>
+
+          <!-- Amount -->
+          <div>
+            <label for="amount" class="block text-sm font-medium text-gray-700"
+              >Amount:</label
+            >
+            <input
+              type="number"
+              id="amount"
+              class="w-full border border-gray-300 rounded-lg p-2"
+              placeholder="Enter amount"
+            />
+          </div>
+
+          <!-- Convert Button -->
+          <button
+            type="button"
+            id="convertButton"
+            class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
+          >
+            Convert
+          </button>
+        </form>
+      </section>
+
+      <!-- Conversion Result -->
+      <section
+        id="resultSection"
+        class="mt-8 max-w-3xl mx-auto bg-white shadow-lg rounded-lg p-6 hidden"
+      >
+        <h2 class="text-lg font-semibold text-gray-800">Conversion Result</h2>
+        <p id="result" class="text-gray-700 mt-2"></p>
+      </section>
+
+      <!-- Conversion History -->
+      <section
+        id="historySection"
+        class="mt-8 max-w-3xl mx-auto bg-white shadow-lg rounded-lg p-6"
+      >
+        <h2 class="text-lg font-semibold text-gray-800">Conversion History</h2>
+        <ul id="historyList" class="list-disc list-inside text-gray-700 mt-4">
+          <!-- Conversions will be dynamically added here -->
+        </ul>
+      </section>
+    </div>
+
+    <script>
+      // Backend URL
+      const backendUrl = "http://localhost:3000";
+
+      const currencyDescriptions = {
+        USD: "US Dollar",
+        EUR: "Euro",
+        GBP: "British Pound",
+        CAD: "Canadian Dollar",
+        INR: "Indian Rupee",
+        JPY: "Japanese Yen",
+        MXN: "Mexican Peso",
+        KES: "Kenyan Shilling",
+        PKR: "Pakistani Rupee",
+        CNY: "Chinese Yuan",
+        SGD: "Singapore Dollar",
+        RUB: "Russian Ruble",
+      };
+      // Convert Currency
+      document
+        .getElementById("convertButton")
+        .addEventListener("click", async () => {
+          const currencyFrom = document.getElementById("currencyFrom").value;
+          const currencyTo = document.getElementById("currencyTo").value;
+          const amount = document.getElementById("amount").value;
+
+          try {
+            const response = await fetch(`${backendUrl}/convert`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                currency_from: currencyFrom,
+                currency_to: currencyTo,
+                amount: parseFloat(amount),
+              }),
+            });
+            const data = await response.json();
+
+            if (response.ok) {
+              // Display result
+              document.getElementById(
+                "result"
+              ).textContent = `${amount} ${currencyFrom} = ${data.converted} ${currencyTo} (Rate: ${data.rate})`;
+              document
+                .getElementById("resultSection")
+                .classList.remove("hidden");
+
+              // Update transaction history
+              loadTransactionHistory();
+            } else {
+              alert(data.error || "Error converting currency");
+            }
+          } catch (err) {
+            console.error(err);
+            alert("Failed to connect to the server");
+          }
+        });
+
+      // Load Conversion History
+      async function loadTransactionHistory() {
+        try {
+          const response = await fetch(`${backendUrl}/transactions`);
+          const history = await response.json();
+
+          const historyList = document.getElementById("historyList");
+          historyList.innerHTML = ""; // Clear existing history
+
+          history.forEach((txn) => {
+            const listItem = document.createElement("li");
+            listItem.textContent = `${txn.amount_from} ${txn.currency_from} → ${txn.amount_to} ${txn.currency_to} at ${txn.rate}`;
+            historyList.appendChild(listItem);
+          });
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      // Load history on page load
+      loadTransactionHistory();
+    </script>
+  </body>
+</html>
